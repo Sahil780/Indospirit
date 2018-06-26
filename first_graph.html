@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+	<script>
+	function Zone() {
+   $('#year-select').empty();
+   $('#year-select').append("<option>Select Year</option>");
+   $.ajax({
+      type: "GET",
+      url: "http://localhost/chartjs/first_graph_data.php",
+      dataType: "json",
+      success: function(data) {
+// var text = JSON.parse(data)
+//  console.log(text)
+ alert("succcess")
+      //    for(var i in data){
+      //    var year=data[i].Year;
+      //    console.log("ye hai year"+year)
+      // }
+         $('#year-select').empty();
+         $('#year-select').append("<option value='0'>-- Select Year --</option>");
+         // $.each(data, function(i, item) {
+         //    $('#year-select').append('<option value=' + data[i].Month + '>' + data[i].Year + '</option>');
+         // });
+
+          $.each(data, function(i, item) {
+             $('#year-select').append('<option value=' + data[i].Month + '>' + data[i].Year + '</option>');
+          });
+
+         $("#year-select").change(function() {
+            var nom = $("#year-select option:selected").text(); // name of selected option
+            var index = quantityOrdered.indexOf(nom);
+            // var new_labels = [year[index]];
+            var new_data1 = [quantityOrdered[index]];
+            var new_data2 = [month[index]];
+            var new_data3=[year[index]];
+            barGraph.data.labels = new_labels;
+            barGraph.data.datasets[0].data = new_data1;
+            barGraph.data.datasets[1].data = new_data2;
+            // barGraph.data.datasets[2].data=new_data3;
+            barGraph.update(); // update chart
+         });
+
+         var quantityOrdered = [];
+         var month = [];
+         var year = [];
+         for (var i in data) {
+            quantityOrdered.push(data[i].QuantityOrdered);
+            month.push(data[i].Month);
+            year.push(data[i].Year)
+         }
+         var chartdata = {
+            labels: month,
+            datasets: [{
+               label: 'Quantity',
+               backgroundColor: 'rgba(200, 200, 200, 0.75)',
+               borderColor: 'rgba(200, 200, 200, 0.75)',
+               hoverBackgroundColor: 'rgba(200, 200, 200, 1)',
+               hoverBorderColor: 'rgba(200, 200, 200, 1)',
+               data: quantityOrdered
+            }, {
+               label: 'Month',
+               backgroundColor: 'rgba(200, 200, 200, 0.75)',
+               borderColor: 'rgba(200, 200, 200, 0.75)',
+               hoverBackgroundColor: 'rgba(200, 200, 200, 1)',
+               hoverBorderColor: 'rgba(200, 200, 200, 1)',
+               data: year
+            }]
+         };
+
+         var option = {
+            scales: {
+               yAxes: [{
+                  ticks: {
+                     beginAtZero: true
+                  }
+               }]
+            }
+         };
+         var ctx = $("#mycanvas");
+         var barGraph = new Chart(ctx, {
+            type: 'bar',
+            data: chartdata,
+            options: option
+         });
+         var myBarChart;
+
+         $("#year-select").val(month[0]).trigger('change'); // select first option
+
+      },
+      complete: function() {}
+   });
+}
+$(document).ready(function() {
+   Zone();
+});
+	</script>
+
+		<title>ChartJS - BarGraph</title>
+		<style type="text/css">
+			#chart-container {
+				width: 900px;
+				height: auto;
+			}
+		</style>
+	</head>
+	<body>
+	<select id="year-select"></select>
+		<div id="chart-container">
+		
+
+		<canvas id="mycanvas"></canvas>
+		</div>
+
+		<!-- javascript -->
+		<script type="text/javascript" src="js/Chart.min.js"></script>
+		<!--<script type="text/javascript" src="js/app.js"></script>-->
+	</body>
+</html>
